@@ -38,11 +38,11 @@ import android.util.Log;
 import android.view.Window;
 import android.widget.Toast;
 
-public class Prefs extends PreferenceActivity implements OnSharedPreferenceChangeListener {
+public class ActivitySetting extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
     // TODO: Show values in summary
 
-    private final String TAG = "Prefs";
+    private final String TAG = "ActivitySetting";
 
     public final static String KEY_RESOLVE_NAME = "resolve_name";
     public final static boolean DEFAULT_RESOLVE_NAME = true;
@@ -118,7 +118,7 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
     public static final String KEY_WIFI = "wifi";
 
     private static final String URL_DONATE = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=MDSDWG83PJSNG&lc=CH&item_name=Network%20Discovery%20for%20Android&currency_code=CHF&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted";
-    private static final String URL_WEB = "http://rorist.github.com/android-network-discovery/";
+    private static final String URL_WEB = "http://rorist.github.com/android-network-activity_discovery/";
     private static final String URL_EMAIL = "aubort.jeanbaptiste@gmail.com";
 
     private Context ctxt;
@@ -145,7 +145,7 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
         Preference resetdb = (Preference) ps.findPreference(KEY_RESET_NICDB);
         resetdb.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
-                new UpdateNicDb(Prefs.this);
+                new UpdateNicDb(ActivitySetting.this);
                 return false;
             }
         });

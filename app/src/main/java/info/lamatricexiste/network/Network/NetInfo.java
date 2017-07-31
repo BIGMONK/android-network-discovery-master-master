@@ -6,7 +6,7 @@
 //am start -a android.intent.action.MAIN -n com.android.settings/.wifi.WifiSettings
 package info.lamatricexiste.network.Network;
 
-import info.lamatricexiste.network.Utils.Prefs;
+import info.lamatricexiste.network.Utils.ActivitySetting;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.SupplicantState;
@@ -80,21 +79,21 @@ public class NetInfo {
 
     @Override
     public int hashCode() {
-        int ip_custom = prefs.getBoolean(Prefs.KEY_IP_CUSTOM, Prefs.DEFAULT_IP_CUSTOM) ? 1:0;
-        int ip_start = prefs.getString(Prefs.KEY_IP_START, Prefs.DEFAULT_IP_START).hashCode();
-        int ip_end = prefs.getString(Prefs.KEY_IP_END, Prefs.DEFAULT_IP_END).hashCode();
-        int cidr_custom = prefs.getBoolean(Prefs.KEY_CIDR_CUSTOM, Prefs.DEFAULT_CIDR_CUSTOM) ? 1:0;
-        int cidr = prefs.getString(Prefs.KEY_CIDR, Prefs.DEFAULT_CIDR).hashCode();
+        int ip_custom = prefs.getBoolean(ActivitySetting.KEY_IP_CUSTOM, ActivitySetting.DEFAULT_IP_CUSTOM) ? 1 : 0;
+        int ip_start = prefs.getString(ActivitySetting.KEY_IP_START, ActivitySetting.DEFAULT_IP_START).hashCode();
+        int ip_end = prefs.getString(ActivitySetting.KEY_IP_END, ActivitySetting.DEFAULT_IP_END).hashCode();
+        int cidr_custom = prefs.getBoolean(ActivitySetting.KEY_CIDR_CUSTOM, ActivitySetting.DEFAULT_CIDR_CUSTOM) ? 1 : 0;
+        int cidr = prefs.getString(ActivitySetting.KEY_CIDR, ActivitySetting.DEFAULT_CIDR).hashCode();
         return 42 + intf.hashCode() + ip.hashCode() + cidr + ip_custom + ip_start + ip_end + cidr_custom + cidr;
     }
 
     public void getIp() {
-        intf = prefs.getString(Prefs.KEY_INTF, Prefs.DEFAULT_INTF);
+        intf = prefs.getString(ActivitySetting.KEY_INTF, ActivitySetting.DEFAULT_INTF);
         try {
-            if (intf == Prefs.DEFAULT_INTF || NOIF.equals(intf)) {
+            if (intf == ActivitySetting.DEFAULT_INTF || NOIF.equals(intf)) {
                 // Automatic interface selection
                 for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en
-                        .hasMoreElements();) {
+                        .hasMoreElements(); ) {
                     NetworkInterface ni = en.nextElement();
                     intf = ni.getName();
                     ip = getInterfaceFirstIp(ni);
@@ -103,13 +102,13 @@ public class NetInfo {
                     }
                 }
             } else {
-                // Defined interface from Prefs
+                // Defined interface from ActivitySetting
                 ip = getInterfaceFirstIp(NetworkInterface.getByName(intf));
             }
         } catch (SocketException e) {
             Log.e(TAG, e.getMessage());
             //Editor edit = prefs.edit();
-            //edit.putString(Prefs.KEY_INTF, Prefs.DEFAULT_INTF);
+            //edit.putString(ActivitySetting.KEY_INTF, ActivitySetting.DEFAULT_INTF);
             //edit.commit();
         }
         getCidr();
@@ -117,7 +116,7 @@ public class NetInfo {
 
     private String getInterfaceFirstIp(NetworkInterface ni) {
         if (ni != null) {
-            for (Enumeration<InetAddress> nis = ni.getInetAddresses(); nis.hasMoreElements();) {
+            for (Enumeration<InetAddress> nis = ni.getInetAddresses(); nis.hasMoreElements(); ) {
                 InetAddress ia = nis.nextElement();
                 if (!ia.isLoopbackAddress()) {
                     if (ia instanceof Inet6Address) {
@@ -151,7 +150,7 @@ public class NetInfo {
                     Log.i(TAG, "cannot find cidr, using default /24");
                 }
             } catch (NumberFormatException e) {
-                Log.i(TAG, e.getMessage()+ " -> cannot find cidr, using default /24");
+                Log.i(TAG, e.getMessage() + " -> cannot find cidr, using default /24");
             }
         }
     }
@@ -275,18 +274,20 @@ public class NetInfo {
         return 32 - (int) (Math.log(sum) / Math.log(2d));
     }
 
-    // public int getIntFromInet(InetAddress ip_addr) {
-    // return getIntFromIp(ip_addr.getHostAddress());
-    // }
+//     public int getIntFromInet(InetAddress ip_addr) {
+//     return getIntFromIp(ip_addr.getHostAddress());
+//     }
 
-    // private InetAddress getInetFromInt(int ip_int) {
-    // byte[] quads = new byte[4];
-    // for (int k = 0; k < 4; k++)
-    // quads[k] = (byte) ((ip_int >> k * 8) & 0xFF); // 0xFF=255
-    // try {
-    // return InetAddress.getByAddress(quads);
-    // } catch (java.net.UnknownHostException e) {
-    // return null;
-    // }
-    // }
+//     private InetAddress getInetFromInt(int ip_int) {
+//     byte[] quads = new byte[4];
+//     for (int k = 0; k < 4; k++)
+//     quads[k] = (byte) ((ip_int >> k * 8) & 0xFF); // 0xFF=255
+//     try {
+//     return InetAddress.getByAddress(quads);
+//     } catch (java.net.UnknownHostException e) {
+//     return null;
+//     }
+//     }
+
+
 }

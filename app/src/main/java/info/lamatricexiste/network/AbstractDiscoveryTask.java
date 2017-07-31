@@ -1,18 +1,20 @@
 package info.lamatricexiste.network;
 
 import info.lamatricexiste.network.Network.HostBean;
-import info.lamatricexiste.network.Utils.Prefs;
+import info.lamatricexiste.network.Network.NetInfo;
+import info.lamatricexiste.network.Utils.ActivitySetting;
 
 import java.lang.ref.WeakReference;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Vibrator;
+import android.util.Log;
 
-public abstract class AbstractDiscovery extends AsyncTask<Void, HostBean, Void> {
+public abstract class AbstractDiscoveryTask extends AsyncTask<Void, HostBean, Void> {
 
-    //private final String TAG = "AbstractDiscovery";
-
+    //private final String TAG = "AbstractDiscoveryTask";
+    private static final String TAG = "AbstractDiscoveryTask";
     protected int hosts_done = 0;
     final protected WeakReference<ActivityDiscovery> mDiscover;
 
@@ -21,7 +23,7 @@ public abstract class AbstractDiscovery extends AsyncTask<Void, HostBean, Void> 
     protected long end = 0;
     protected long size = 0;
 
-    public AbstractDiscovery(ActivityDiscovery discover) {
+    public AbstractDiscoveryTask(ActivityDiscovery discover) {
         mDiscover = new WeakReference<ActivityDiscovery>(discover);
     }
 
@@ -29,12 +31,17 @@ public abstract class AbstractDiscovery extends AsyncTask<Void, HostBean, Void> 
         this.ip = ip;
         this.start = start;
         this.end = end;
+        Log.d(TAG, "setNetwork: ip="+ NetInfo.getIpFromLongUnsigned(ip)
+                +"start="+NetInfo.getIpFromLongUnsigned(start)
+                +"end="+NetInfo.getIpFromLongUnsigned(end)
+        );
     }
 
     abstract protected Void doInBackground(Void... params);
 
     @Override
     protected void onPreExecute() {
+        Log.d(TAG, "onPreExecute: ");
         size = (int) (end - start + 1);
         if (mDiscover != null) {
             final ActivityDiscovery discover = mDiscover.get();
@@ -46,6 +53,7 @@ public abstract class AbstractDiscovery extends AsyncTask<Void, HostBean, Void> 
 
     @Override
     protected void onProgressUpdate(HostBean... host) {
+        Log.d(TAG, "onProgressUpdate: isCancelled="+isCancelled());
         if (mDiscover != null) {
             final ActivityDiscovery discover = mDiscover.get();
             if (discover != null) {
@@ -64,11 +72,13 @@ public abstract class AbstractDiscovery extends AsyncTask<Void, HostBean, Void> 
 
     @Override
     protected void onPostExecute(Void unused) {
+        Log.d(TAG, "onPostExecute: ");
+
         if (mDiscover != null) {
             final ActivityDiscovery discover = mDiscover.get();
             if (discover != null) {
-                if (discover.prefs.getBoolean(Prefs.KEY_VIBRATE_FINISH,
-                        Prefs.DEFAULT_VIBRATE_FINISH) == true) {
+                if (discover.prefs.getBoolean(ActivitySetting.KEY_VIBRATE_FINISH,
+                        ActivitySetting.DEFAULT_VIBRATE_FINISH) == true) {
                     Vibrator v = (Vibrator) discover.getSystemService(Context.VIBRATOR_SERVICE);
                     v.vibrate(ActivityDiscovery.VIBRATE);
                 }
@@ -80,6 +90,7 @@ public abstract class AbstractDiscovery extends AsyncTask<Void, HostBean, Void> 
 
     @Override
     protected void onCancelled() {
+        Log.d(TAG, "onCancelled: ");
         if (mDiscover != null) {
             final ActivityDiscovery discover = mDiscover.get();
             if (discover != null) {

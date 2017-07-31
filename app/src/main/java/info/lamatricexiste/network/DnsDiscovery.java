@@ -8,7 +8,7 @@ package info.lamatricexiste.network;
 import info.lamatricexiste.network.Network.HardwareAddress;
 import info.lamatricexiste.network.Network.HostBean;
 import info.lamatricexiste.network.Network.NetInfo;
-import info.lamatricexiste.network.Utils.Prefs;
+import info.lamatricexiste.network.Utils.ActivitySetting;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -16,7 +16,7 @@ import java.net.InetAddress;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.util.Log;
 
-public class DnsDiscovery extends AbstractDiscovery {
+public class DnsDiscovery extends AbstractDiscoveryTask {
 
     private final String TAG = "DnsDiscovery";
 
@@ -33,8 +33,8 @@ public class DnsDiscovery extends AbstractDiscovery {
                         + "), end=" + NetInfo.getIpFromLongUnsigned(end) + " (" + end
                         + "), length=" + size);
 
-                int timeout = Integer.parseInt(discover.prefs.getString(Prefs.KEY_TIMEOUT_DISCOVER,
-                        Prefs.DEFAULT_TIMEOUT_DISCOVER));
+                int timeout = Integer.parseInt(discover.prefs.getString(ActivitySetting.KEY_TIMEOUT_DISCOVER,
+                        ActivitySetting.DEFAULT_TIMEOUT_DISCOVER));
                 Log.i(TAG, "timeout=" + timeout + "ms");
 
                 for (long i = start; i < end + 1; i++) {

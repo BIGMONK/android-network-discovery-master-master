@@ -15,7 +15,7 @@
 
 package info.lamatricexiste.network;
 
-import info.lamatricexiste.network.Utils.Prefs;
+import info.lamatricexiste.network.Utils.ActivitySetting;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -82,7 +82,7 @@ public class AsyncPortscan extends AsyncTask<Void, Object, Void> {
         if (d != null) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(d
                     .getApplicationContext());
-            getBanner = prefs.getBoolean(Prefs.KEY_BANNER, Prefs.DEFAULT_BANNER);
+            getBanner = prefs.getBoolean(ActivitySetting.KEY_BANNER, ActivitySetting.DEFAULT_BANNER);
         }
     }
 

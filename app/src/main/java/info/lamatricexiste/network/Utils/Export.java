@@ -53,7 +53,7 @@ public class Export {
 
     public String getFileName() {
         // TODO: Use getExternalFilesDir()
-        return Environment.getExternalStorageDirectory().toString() + "/discovery-"
+        return Environment.getExternalStorageDirectory().toString() + "/activity_discovery-"
                 + net.getNetIp() + ".xml";
     }
 

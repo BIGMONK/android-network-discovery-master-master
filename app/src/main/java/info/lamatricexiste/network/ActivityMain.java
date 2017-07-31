@@ -6,9 +6,9 @@
 package info.lamatricexiste.network;
 
 import info.lamatricexiste.network.Network.NetInfo;
+import info.lamatricexiste.network.Utils.ActivitySetting;
 import info.lamatricexiste.network.Utils.Db;
 import info.lamatricexiste.network.Utils.DbUpdate;
-import info.lamatricexiste.network.Utils.Prefs;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -45,7 +45,7 @@ final public class ActivityMain extends Activity {
 
         // Reset interface
         Editor edit = prefs.edit();
-        edit.putString(Prefs.KEY_INTF, Prefs.DEFAULT_INTF);
+        edit.putString(ActivitySetting.KEY_INTF, ActivitySetting.DEFAULT_INTF);
 
         phase2(ctxt);
     }
@@ -90,7 +90,7 @@ final public class ActivityMain extends Activity {
 
         // CheckNicDb
         try {
-            if (prefs.getInt(Prefs.KEY_RESET_NICDB, Prefs.DEFAULT_RESET_NICDB) != getPackageManager()
+            if (prefs.getInt(ActivitySetting.KEY_RESET_NICDB, ActivitySetting.DEFAULT_RESET_NICDB) != getPackageManager()
                     .getPackageInfo(PKG, 0).versionCode) {
                 new DbUpdateNic();
             } else {
@@ -101,7 +101,7 @@ final public class ActivityMain extends Activity {
             phase3(ctxt);
         } catch (ClassCastException e) {
             Editor edit = prefs.edit();
-            edit.putInt(Prefs.KEY_RESET_NICDB, 1);
+            edit.putInt(ActivitySetting.KEY_RESET_NICDB, 1);
             edit.commit();
             phase3(ctxt);
         }
@@ -111,7 +111,7 @@ final public class ActivityMain extends Activity {
         // Install Services DB
 
         try {
-            if (prefs.getInt(Prefs.KEY_RESET_SERVICESDB, Prefs.DEFAULT_RESET_SERVICESDB) != getPackageManager()
+            if (prefs.getInt(ActivitySetting.KEY_RESET_SERVICESDB, ActivitySetting.DEFAULT_RESET_SERVICESDB) != getPackageManager()
                     .getPackageInfo(PKG, 0).versionCode) {
                 new CreateServicesDb(ActivityMain.this).execute();
             } else {
@@ -197,7 +197,7 @@ final public class ActivityMain extends Activity {
                 }
                 try {
                     Editor edit = prefs.edit();
-                    edit.putInt(Prefs.KEY_RESET_SERVICESDB, d.getPackageManager().getPackageInfo(
+                    edit.putInt(ActivitySetting.KEY_RESET_SERVICESDB, d.getPackageManager().getPackageInfo(
                             PKG, 0).versionCode);
                     edit.commit();
                 } catch (NameNotFoundException e) {

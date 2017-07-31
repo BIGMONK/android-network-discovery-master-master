@@ -5,17 +5,18 @@
 
 package info.lamatricexiste.network;
 
-import info.lamatricexiste.network.Network.HardwareAddress;
 import info.lamatricexiste.network.Network.HostBean;
 import info.lamatricexiste.network.Network.NetInfo;
+import info.lamatricexiste.network.Utils.ActivitySetting;
 import info.lamatricexiste.network.Utils.Export;
 import info.lamatricexiste.network.Utils.Help;
-import info.lamatricexiste.network.Utils.Prefs;
 import info.lamatricexiste.network.Utils.Save;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -59,35 +60,37 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
     private List<HostBean> hosts = null;
     private HostsAdapter adapter;
     private Button btn_discover;
-    private AbstractDiscovery mDiscoveryTask = null;
+    private AbstractDiscoveryTask mDiscoveryTask = null;
 
     // private SlidingDrawer mDrawer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         requestWindowFeature(Window.FEATURE_PROGRESS);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.discovery);
+
+        setContentView(R.layout.activity_discovery);
         mInflater = LayoutInflater.from(ctxt);
 
-        // Discover
+        // Discover 发掘
         btn_discover = (Button) findViewById(R.id.btn_discover);
         btn_discover.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startDiscovering();
+                startDiscovering();//开始发掘
             }
         });
 
-        // Options
+        // Options 选项
         Button btn_options = (Button) findViewById(R.id.btn_options);
         btn_options.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(ctxt, Prefs.class));
+                startActivity(new Intent(ctxt, ActivitySetting.class));
             }
         });
 
-        // Hosts list
+        // Hosts list 扫描结果
         adapter = new HostsAdapter(ctxt);
         ListView list = (ListView) findViewById(R.id.output);
         list.setAdapter(adapter);
@@ -137,16 +140,16 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case ActivityDiscovery.MENU_SCAN_SINGLE:
+            case ActivityDiscovery.MENU_SCAN_SINGLE://扫描IP
                 scanSingle(this, null);
                 return true;
-            case ActivityDiscovery.MENU_OPTIONS:
-                startActivity(new Intent(ctxt, Prefs.class));
+            case ActivityDiscovery.MENU_OPTIONS://选项
+                startActivity(new Intent(ctxt, ActivitySetting.class));
                 return true;
-            case ActivityDiscovery.MENU_HELP:
+            case ActivityDiscovery.MENU_HELP://帮助
                 startActivity(new Intent(ctxt, Help.class));
                 return true;
-            case ActivityDiscovery.MENU_EXPORT:
+            case ActivityDiscovery.MENU_EXPORT://导出
                 export();
                 return true;
         }
@@ -165,7 +168,7 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
             btn_discover.setText(R.string.btn_discover_cancel);
             btn_discover.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    cancelTasks();
+                    cancelTasks();//取消发掘
                 }
             });
         }
@@ -175,26 +178,28 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
             currentNetwork = net.hashCode();
 
             // Cancel running tasks
-            cancelTasks();
+            cancelTasks();//取消发掘
         } else {
             return;
         }
 
-        // Get ip information
+        // Get ip information 获取ip信息
         network_ip = NetInfo.getUnsignedLongFromIp(net.ip);
-        if (prefs.getBoolean(Prefs.KEY_IP_CUSTOM, Prefs.DEFAULT_IP_CUSTOM)) {
+        //是否自定义ip扫描范围
+        if (prefs.getBoolean(ActivitySetting.KEY_IP_CUSTOM, ActivitySetting.DEFAULT_IP_CUSTOM)) {
             // Custom IP
-            network_start = NetInfo.getUnsignedLongFromIp(prefs.getString(Prefs.KEY_IP_START,
-                    Prefs.DEFAULT_IP_START));
-            network_end = NetInfo.getUnsignedLongFromIp(prefs.getString(Prefs.KEY_IP_END,
-                    Prefs.DEFAULT_IP_END));
+            network_start = NetInfo.getUnsignedLongFromIp(prefs.getString(ActivitySetting.KEY_IP_START,
+                    ActivitySetting.DEFAULT_IP_START));
+            network_end = NetInfo.getUnsignedLongFromIp(prefs.getString(ActivitySetting.KEY_IP_END,
+                    ActivitySetting.DEFAULT_IP_END));
         } else {
             // Custom CIDR
-            if (prefs.getBoolean(Prefs.KEY_CIDR_CUSTOM, Prefs.DEFAULT_CIDR_CUSTOM)) {
-                net.cidr = Integer.parseInt(prefs.getString(Prefs.KEY_CIDR, Prefs.DEFAULT_CIDR));
+            if (prefs.getBoolean(ActivitySetting.KEY_CIDR_CUSTOM, ActivitySetting.DEFAULT_CIDR_CUSTOM)) {
+                net.cidr = Integer.parseInt(prefs.getString(ActivitySetting.KEY_CIDR, ActivitySetting.DEFAULT_CIDR));
             }
             // Detected IP
             int shift = (32 - net.cidr);
+            Log.d(TAG, "setInfo: net.cidr=" + net.cidr + "  shift=" + shift);
             if (net.cidr < 31) {
                 network_start = (network_ip >> shift << shift) + 1;
                 network_end = (network_start | ((1 << shift) - 1)) - 1;
@@ -204,8 +209,8 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
             }
             // Reset ip start-end (is it really convenient ?)
             Editor edit = prefs.edit();
-            edit.putString(Prefs.KEY_IP_START, NetInfo.getIpFromLongUnsigned(network_start));
-            edit.putString(Prefs.KEY_IP_END, NetInfo.getIpFromLongUnsigned(network_end));
+            edit.putString(ActivitySetting.KEY_IP_START, NetInfo.getIpFromLongUnsigned(network_start));
+            edit.putString(ActivitySetting.KEY_IP_END, NetInfo.getIpFromLongUnsigned(network_end));
             edit.commit();
         }
     }
@@ -247,8 +252,8 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
         final HostBean host = hosts.get(position);
         AlertDialog.Builder dialog = new AlertDialog.Builder(ActivityDiscovery.this);
         dialog.setTitle(R.string.discover_action_title);
-        dialog.setItems(new CharSequence[] { getString(R.string.discover_action_scan),
-                getString(R.string.discover_action_rename) }, new OnClickListener() {
+        dialog.setItems(new CharSequence[]{getString(R.string.discover_action_scan),
+                getString(R.string.discover_action_rename)}, new OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case 0:
@@ -342,7 +347,7 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
             }
             if (!host.hardwareAddress.equals(NetInfo.NOMAC)) {
                 holder.mac.setText(host.hardwareAddress);
-                if(host.nicVendor != null){
+                if (host.nicVendor != null) {
                     holder.vendor.setText(host.nicVendor);
                 } else {
                     holder.vendor.setText(R.string.info_unknown);
@@ -363,8 +368,8 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
     private void startDiscovering() {
         int method = 0;
         try {
-            method = Integer.parseInt(prefs.getString(Prefs.KEY_METHOD_DISCOVER,
-                    Prefs.DEFAULT_METHOD_DISCOVER));
+            method = Integer.parseInt(prefs.getString(ActivitySetting.KEY_METHOD_DISCOVER,
+                    ActivitySetting.DEFAULT_METHOD_DISCOVER));
         } catch (NumberFormatException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -377,18 +382,27 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
                 break;
             case 0:
             default:
-                mDiscoveryTask = new DefaultDiscovery(ActivityDiscovery.this);
+                mDiscoveryTask = new DefaultDiscoveryTask(ActivityDiscovery.this);
         }
+        Log.d(TAG, "startDiscovering: 发掘方式：method=" + method + "  " + mDiscoveryTask.getClass().getSimpleName());
+        Log.d(TAG, "startDiscovering: network_ip=" + NetInfo.getIpFromLongUnsigned(network_ip)
+                + "  network_start=" + NetInfo.getIpFromLongUnsigned(network_start)
+                + "  network_end=" + NetInfo.getIpFromLongUnsigned(network_end)
+        );
         mDiscoveryTask.setNetwork(network_ip, network_start, network_end);
         mDiscoveryTask.execute();
+
+
         btn_discover.setText(R.string.btn_discover_cancel);
         setButton(btn_discover, R.drawable.cancel, false);
         btn_discover.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                cancelTasks();
+                Log.d(TAG, "onClick: 点击取消发掘");
+                cancelTasks();//点击取消
             }
         });
         makeToast(R.string.discover_start);
+
         setProgressBarVisibility(true);
         setProgressBarIndeterminateVisibility(true);
         initList();
@@ -414,16 +428,42 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
         hosts = new ArrayList<HostBean>();
     }
 
+    Comparator<HostBean> comp = new Comparator<HostBean>() {
+        @Override
+        public int compare(HostBean hb1, HostBean hb2) {
+            String ipString1 = hb1.ipAddress;
+            String ipString2 = hb2.ipAddress;
+            String[] ipSs1 = ipString1.split("\\.");
+            String[] ipSs2 = ipString2.split("\\.");
+            long ip1 = 0, ip2 = 0;
+            for (int i = 0; i < ipSs1.length; i++) {
+                ip1 = ip1 + (Long.parseLong(ipSs1[i])<<((ipSs1.length-i-1)*8));
+            }
+            for (int i = 0; i < ipSs2.length; i++) {
+                ip2 = ip2 + (Long.parseLong(ipSs2[i])<<((ipSs2.length-i-1)*8));
+            }
+            return (ip1+"").compareTo(ip2+"");
+        }
+    };
+
     public void addHost(HostBean host) {
         host.position = hosts.size();
         hosts.add(host);
+        Collections.sort(hosts, comp);
         adapter.add(null);
     }
 
+    /**
+     * 扫描指定主机端口
+     *
+     * @param ctxt
+     * @param ip   主机ip
+     */
     public static void scanSingle(final Context ctxt, String ip) {
         // Alert dialog
         View v = LayoutInflater.from(ctxt).inflate(R.layout.scan_single, null);
         final EditText txt = (EditText) v.findViewById(R.id.ip);
+        txt.setText("192.168.1.1");
         if (ip != null) {
             txt.setText(ip);
         }
@@ -433,15 +473,22 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
         dialogIp.setPositiveButton(R.string.btn_scan, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
                 // start scanportactivity
-                Intent intent = new Intent(ctxt, ActivityPortscan.class);
-                intent.putExtra(HostBean.EXTRA_HOST, txt.getText().toString());
-                try {
-                    intent.putExtra(HostBean.EXTRA_HOSTNAME, (InetAddress.getByName(txt.getText()
-                            .toString()).getHostName()));
-                } catch (UnknownHostException e) {
-                    intent.putExtra(HostBean.EXTRA_HOSTNAME, txt.getText().toString());
-                }
-                ctxt.startActivity(intent);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(ctxt, ActivityPortscan.class);
+                        intent.putExtra(HostBean.EXTRA_HOST, txt.getText().toString());
+                        try {
+                            intent.putExtra(HostBean.EXTRA_HOSTNAME, (InetAddress.getByName(txt.getText()
+                                    .toString()).getHostName()));
+                        } catch (UnknownHostException e) {
+                            intent.putExtra(HostBean.EXTRA_HOSTNAME, txt.getText().toString());
+                        }
+                        ctxt.startActivity(intent);
+                    }
+                }).start();
+
             }
         });
         dialogIp.setNegativeButton(R.string.btn_discover_cancel, null);

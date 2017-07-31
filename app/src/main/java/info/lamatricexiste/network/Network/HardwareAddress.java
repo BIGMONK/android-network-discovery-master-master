@@ -7,8 +7,6 @@
 
 package info.lamatricexiste.network.Network;
 
-import info.lamatricexiste.network.R;
-import info.lamatricexiste.network.Utils.Prefs;
 import info.lamatricexiste.network.Utils.Db;
 
 import java.io.BufferedReader;
@@ -19,13 +17,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class HardwareAddress {
@@ -99,7 +94,7 @@ public class HardwareAddress {
             // FIXME: Reset db
             //Context ctxt = d.getApplicationContext();
             //Editor edit = PreferenceManager.getDefaultSharedPreferences(ctxt).edit();
-            //edit.putInt(Prefs.KEY_RESET_NICDB, 1);
+            //edit.putInt(ActivitySetting.KEY_RESET_NICDB, 1);
             //edit.commit();
         }
         return ni;

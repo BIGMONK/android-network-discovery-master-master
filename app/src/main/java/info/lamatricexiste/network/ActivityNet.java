@@ -1,7 +1,7 @@
 package info.lamatricexiste.network;
 
 import info.lamatricexiste.network.Network.NetInfo;
-import info.lamatricexiste.network.Utils.Prefs;
+import info.lamatricexiste.network.Utils.ActivitySetting;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -127,8 +127,8 @@ public abstract class ActivityNet extends Activity {
                             setButtons(false);
                         }
                     } else if (type == ConnectivityManager.TYPE_MOBILE) { // 3G
-                        if (prefs.getBoolean(Prefs.KEY_MOBILE, Prefs.DEFAULT_MOBILE)
-                                || prefs.getString(Prefs.KEY_INTF, Prefs.DEFAULT_INTF) != null) {
+                        if (prefs.getBoolean(ActivitySetting.KEY_MOBILE, ActivitySetting.DEFAULT_MOBILE)
+                                || prefs.getString(ActivitySetting.KEY_INTF, ActivitySetting.DEFAULT_INTF) != null) {
                             net.getMobileInfo();
                             if (net.carrier != null) {
                                 net.getIp();

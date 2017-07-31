@@ -7,9 +7,9 @@ package info.lamatricexiste.network;
 
 import info.lamatricexiste.network.Network.HostBean;
 import info.lamatricexiste.network.Network.NetInfo;
+import info.lamatricexiste.network.Utils.ActivitySetting;
 import info.lamatricexiste.network.Utils.Db;
 import info.lamatricexiste.network.Utils.Help;
-import info.lamatricexiste.network.Utils.Prefs;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -50,6 +50,9 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * 根据IP扫描指定主机的端口
+ */
 final public class ActivityPortscan extends TabActivity {
 
     private static final String REQ_SERVICE = "select service from services where port=? limit 1";
@@ -96,7 +99,7 @@ final public class ActivityPortscan extends TabActivity {
                 host.portsOpen = intArrayToArrayList(extras.getIntArray(HostBean.EXTRA_PORTSO));
                 host.portsClosed = intArrayToArrayList(extras.getIntArray(HostBean.EXTRA_PORTSC));
                 host.responseTime = extras.getInt(HostBean.EXTRA_TIMEOUT, Integer
-                        .parseInt(Prefs.DEFAULT_TIMEOUT_PORTSCAN));
+                        .parseInt(ActivitySetting.DEFAULT_TIMEOUT_PORTSCAN));
                 // FIXME: banners and services not supported (HashMap's)
             }
         }
@@ -161,10 +164,10 @@ final public class ActivityPortscan extends TabActivity {
         // Tabs
         TabHost tabHost = getTabHost();
         tabHost.addTab(tabHost.newTabSpec("tab_open").setIndicator(
-                getString(R.string.scan_open, cnt_open),
+                getString(R.string.scan_open, cnt_open+""),
                 getResources().getDrawable(R.drawable.open)).setContent(R.id.list_open));
         tabHost.addTab(tabHost.newTabSpec("tab_closed").setIndicator(
-                getString(R.string.scan_closed, cnt_closed),
+                getString(R.string.scan_closed, cnt_closed+""),
                 getResources().getDrawable(R.drawable.closed)).setContent(R.id.list_closed));
         tabHost.setCurrentTab(0);
         // Ugly hack to have the view holding the tabs
@@ -236,7 +239,7 @@ final public class ActivityPortscan extends TabActivity {
                 ActivityDiscovery.scanSingle(this, host.ipAddress);
                 return true;
             case ActivityDiscovery.MENU_OPTIONS:
-                startActivity(new Intent(ctxt, Prefs.class));
+                startActivity(new Intent(ctxt, ActivitySetting.class));
                 return true;
             case ActivityDiscovery.MENU_HELP:
                 startActivity(new Intent(ctxt, Help.class));
@@ -308,7 +311,7 @@ final public class ActivityPortscan extends TabActivity {
                     public void onClick(View v) {
                         final AlertDialog.Builder dialog = new AlertDialog.Builder(
                                 ActivityPortscan.this);
-                        dialog.setTitle(getString(R.string.scan_banner_title, port));
+                        dialog.setTitle(getString(R.string.scan_banner_title, port+""));
                         dialog.setMessage(holder.banner.getText());
                         dialog.setNegativeButton(R.string.btn_close, null);
                         dialog.show();
@@ -349,7 +352,7 @@ final public class ActivityPortscan extends TabActivity {
         if (service.equals("ssh")) {
             pk = "ConnectBot (ssh)";
             search = "market://search?q=pname:org.connectbot";
-            String user = prefs.getString(Prefs.KEY_SSH_USER, Prefs.DEFAULT_SSH_USER);
+            String user = prefs.getString(ActivitySetting.KEY_SSH_USER, ActivitySetting.DEFAULT_SSH_USER);
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("ssh://" + user + "@" + host.ipAddress + ":" + port + "/#"
                     + user + "@" + host.ipAddress + ":" + port));
@@ -406,13 +409,13 @@ final public class ActivityPortscan extends TabActivity {
         protected void onPreExecute() {
             // Get start/end ports
             try {
-                port_start = Integer.parseInt(prefs.getString(Prefs.KEY_PORT_START,
-                        Prefs.DEFAULT_PORT_START));
-                port_end = Integer.parseInt(prefs.getString(Prefs.KEY_PORT_END,
-                        Prefs.DEFAULT_PORT_END));
+                port_start = Integer.parseInt(prefs.getString(ActivitySetting.KEY_PORT_START,
+                        ActivitySetting.DEFAULT_PORT_START));
+                port_end = Integer.parseInt(prefs.getString(ActivitySetting.KEY_PORT_END,
+                        ActivitySetting.DEFAULT_PORT_END));
             } catch (NumberFormatException e) {
-                port_start = Integer.parseInt(Prefs.DEFAULT_PORT_START);
-                port_end = Integer.parseInt(Prefs.DEFAULT_PORT_END);
+                port_start = Integer.parseInt(ActivitySetting.DEFAULT_PORT_START);
+                port_end = Integer.parseInt(ActivitySetting.DEFAULT_PORT_END);
             }
             nb_port = port_end - port_start + 2;
             // Initialize arrays and views
@@ -420,8 +423,8 @@ final public class ActivityPortscan extends TabActivity {
             host.services = new HashMap<Integer, String>();
             host.portsOpen = new ArrayList<Integer>();
             host.portsClosed = new ArrayList<Integer>();
-            mTabOpen.setText(getString(R.string.scan_open, 0));
-            mTabClosed.setText(getString(R.string.scan_closed, 0));
+            mTabOpen.setText(getString(R.string.scan_open, 0+""));
+            mTabClosed.setText(getString(R.string.scan_closed, 0+""));
             setProgress(0);
         }
 
@@ -442,7 +445,7 @@ final public class ActivityPortscan extends TabActivity {
                                 host.services.put(port, getPortService(port));
                                 adapter_open.add(PLACEHOLDER);
                                 cnt_open++;
-                                mTabOpen.setText(getString(R.string.scan_open, cnt_open));
+                                mTabOpen.setText(getString(R.string.scan_open, cnt_open+""));
                             }
                             adapter_open.notifyDataSetChanged();
                         } else if (type == AsyncPortscan.CLOSED) {
@@ -451,7 +454,7 @@ final public class ActivityPortscan extends TabActivity {
                                 host.services.put(port, getPortService(port));
                                 adapter_closed.add(PLACEHOLDER);
                                 cnt_closed++;
-                                mTabClosed.setText(getString(R.string.scan_closed, cnt_closed));
+                                mTabClosed.setText(getString(R.string.scan_closed, cnt_closed+""));
                             }
                             adapter_closed.notifyDataSetChanged();
                         } else if (type == AsyncPortscan.UNREACHABLE) {
@@ -477,7 +480,7 @@ final public class ActivityPortscan extends TabActivity {
         @Override
         protected void onPostExecute(Void unused) {
             // Finishing
-            if (prefs.getBoolean(Prefs.KEY_VIBRATE_FINISH, Prefs.DEFAULT_VIBRATE_FINISH) == true) {
+            if (prefs.getBoolean(ActivitySetting.KEY_VIBRATE_FINISH, ActivitySetting.DEFAULT_VIBRATE_FINISH) == true) {
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(ActivityDiscovery.VIBRATE);
             }
@@ -531,7 +534,7 @@ final public class ActivityPortscan extends TabActivity {
                 } catch (SQLiteException e) {
                     Log.e(TAG, e.getMessage());
                     Editor edit = PreferenceManager.getDefaultSharedPreferences(ctxt).edit();
-                    edit.putInt(Prefs.KEY_RESET_SERVICESDB, 1);
+                    edit.putInt(ActivitySetting.KEY_RESET_SERVICESDB, 1);
                     edit.commit();
                 }
             }
@@ -615,9 +618,9 @@ final public class ActivityPortscan extends TabActivity {
     }
 
     private int getTimeout() {
-        if (prefs.getBoolean(Prefs.KEY_TIMEOUT_FORCE, Prefs.DEFAULT_TIMEOUT_FORCE)) {
-            return Integer.parseInt(prefs.getString(Prefs.KEY_TIMEOUT_PORTSCAN,
-                    Prefs.DEFAULT_TIMEOUT_PORTSCAN));
+        if (prefs.getBoolean(ActivitySetting.KEY_TIMEOUT_FORCE, ActivitySetting.DEFAULT_TIMEOUT_FORCE)) {
+            return Integer.parseInt(prefs.getString(ActivitySetting.KEY_TIMEOUT_PORTSCAN,
+                    ActivitySetting.DEFAULT_TIMEOUT_PORTSCAN));
         }
         return host.responseTime;
     }

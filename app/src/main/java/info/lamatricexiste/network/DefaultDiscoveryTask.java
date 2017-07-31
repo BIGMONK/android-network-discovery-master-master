@@ -8,9 +8,8 @@ package info.lamatricexiste.network;
 import info.lamatricexiste.network.Network.HardwareAddress;
 import info.lamatricexiste.network.Network.HostBean;
 import info.lamatricexiste.network.Network.NetInfo;
-import info.lamatricexiste.network.Network.Ping;
 import info.lamatricexiste.network.Network.RateControl;
-import info.lamatricexiste.network.Utils.Prefs;
+import info.lamatricexiste.network.Utils.ActivitySetting;
 import info.lamatricexiste.network.Utils.Save;
 
 import java.io.IOException;
@@ -23,13 +22,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import android.content.SharedPreferences.Editor;
-import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.util.Log;
 
-public class DefaultDiscovery extends AbstractDiscovery {
+public class DefaultDiscoveryTask extends AbstractDiscoveryTask {
 
-    private final String TAG = "DefaultDiscovery";
+    private final String TAG = "DefaultDiscoveryTask";
     private final static int[] DPORTS = { 139, 445, 22, 80 };
     private final static int TIMEOUT_SCAN = 3600; // seconds
     private final static int TIMEOUT_SHUTDOWN = 10; // seconds
@@ -41,7 +38,7 @@ public class DefaultDiscovery extends AbstractDiscovery {
     private RateControl mRateControl;
     private Save mSave;
 
-    public DefaultDiscovery(ActivityDiscovery discover) {
+    public DefaultDiscoveryTask(ActivityDiscovery discover) {
         super(discover);
         mRateControl = new RateControl();
         mSave = new Save();
@@ -53,8 +50,8 @@ public class DefaultDiscovery extends AbstractDiscovery {
         if (mDiscover != null) {
             final ActivityDiscovery discover = mDiscover.get();
             if (discover != null) {
-                doRateControl = discover.prefs.getBoolean(Prefs.KEY_RATECTRL_ENABLE,
-                        Prefs.DEFAULT_RATECTRL_ENABLE);
+                doRateControl = discover.prefs.getBoolean(ActivitySetting.KEY_RATECTRL_ENABLE,
+                        ActivitySetting.DEFAULT_RATECTRL_ENABLE);
             }
         }
     }
@@ -76,9 +73,21 @@ public class DefaultDiscovery extends AbstractDiscovery {
                     // hosts
                     long pt_backward = ip;
                     long pt_forward = ip + 1;
-                    long size_hosts = size - 1;
+                    long size_hosts = size - 1;//主机在扫描范围内，扫描数量-1
+
 
                     for (int i = 0; i < size_hosts; i++) {
+                        if (isCancelled()){
+                            break;
+                        }
+                        Log.d(TAG, "doInBackground: "
+                        +"  ip="+NetInfo.getIpFromLongUnsigned(ip)
+                        +"  start="+NetInfo.getIpFromLongUnsigned(start)
+                        +"  end="+NetInfo.getIpFromLongUnsigned(end)
+                        +"  pt_backward="+NetInfo.getIpFromLongUnsigned(pt_backward)
+                        +"  pt_forward="+NetInfo.getIpFromLongUnsigned(pt_forward)
+                        +"  size_hosts"+size_hosts
+                        );
                         // Set pointer if of limits
                         if (pt_backward <= start) {
                             pt_move = 2;
@@ -99,6 +108,9 @@ public class DefaultDiscovery extends AbstractDiscovery {
                 } else {
                     Log.i(TAG, "Sequencial scanning");
                     for (long i = start; i <= end; i++) {
+                        if (isCancelled()){
+                            break;
+                        }
                         launch(i);
                     }
                 }
@@ -120,6 +132,7 @@ public class DefaultDiscovery extends AbstractDiscovery {
                 }
             }
         }
+        Log.d(TAG, "doInBackground: return null");
         return null;
     }
 
@@ -129,6 +142,7 @@ public class DefaultDiscovery extends AbstractDiscovery {
             synchronized (mPool) {
                 mPool.shutdownNow();
                 // FIXME: Prevents some task to end (and close the Save DB)
+                Log.d(TAG, "onCancelled: 停止綫程池");
             }
         }
         super.onCancelled();
@@ -136,6 +150,7 @@ public class DefaultDiscovery extends AbstractDiscovery {
 
     private void launch(long i) {
         if(!mPool.isShutdown()) {
+            Log.d(TAG, "launch: 子线程："+NetInfo.getIpFromLongUnsigned(i));
             mPool.execute(new CheckRunnable(NetInfo.getIpFromLongUnsigned(i)));
         }
     }
@@ -148,13 +163,16 @@ public class DefaultDiscovery extends AbstractDiscovery {
         if (mDiscover != null) {
             final ActivityDiscovery discover = mDiscover.get();
             if (discover != null) {
-                return Integer.parseInt(discover.prefs.getString(Prefs.KEY_TIMEOUT_DISCOVER,
-                        Prefs.DEFAULT_TIMEOUT_DISCOVER));
+                return Integer.parseInt(discover.prefs.getString(ActivitySetting.KEY_TIMEOUT_DISCOVER,
+                        ActivitySetting.DEFAULT_TIMEOUT_DISCOVER));
             }
         }
         return 1;
     }
 
+    /**
+     * 扫描测试线程
+     */
     private class CheckRunnable implements Runnable {
         private String addr;
 
@@ -165,8 +183,9 @@ public class DefaultDiscovery extends AbstractDiscovery {
         public void run() {
             if(isCancelled()) {
                 publish(null);
+                return;
             }
-            Log.e(TAG, "run="+addr);
+            Log.e(TAG, "run="+addr+"   isCancelled()="+isCancelled());
             // Create host object
             final HostBean host = new HostBean();
             host.responseTime = getRate();
@@ -180,13 +199,13 @@ public class DefaultDiscovery extends AbstractDiscovery {
                 // Arp Check #1
                 host.hardwareAddress = HardwareAddress.getHardwareAddress(addr);
                 if(!NetInfo.NOMAC.equals(host.hardwareAddress)){
-                    Log.e(TAG, "found using arp #1 "+addr);
+                    Log.e(TAG, "found using arp #1 "+addr+"  "+host.hardwareAddress);
                     publish(host);
                     return;
                 }
                 // Native InetAddress check
                 if (h.isReachable(getRate())) {
-                    Log.e(TAG, "found using InetAddress ping "+addr);
+                    Log.e(TAG, "found using InetAddress ping "+addr+"  "+host.hardwareAddress);
                     publish(host);
                     // Set indicator and get a rate
                     if (doRateControl && mRateControl.indicator == null) {
@@ -198,7 +217,7 @@ public class DefaultDiscovery extends AbstractDiscovery {
                 // Arp Check #2
                 host.hardwareAddress = HardwareAddress.getHardwareAddress(addr);
                 if(!NetInfo.NOMAC.equals(host.hardwareAddress)){
-                    Log.e(TAG, "found using arp #2 "+addr);
+                    Log.e(TAG, "found using arp #2 "+addr+"  "+host.hardwareAddress);
                     publish(host);
                     return;
                 }
@@ -231,7 +250,7 @@ public class DefaultDiscovery extends AbstractDiscovery {
                 // Arp Check #3
                 host.hardwareAddress = HardwareAddress.getHardwareAddress(addr);
                 if(!NetInfo.NOMAC.equals(host.hardwareAddress)){
-                    Log.e(TAG, "found using arp #3 "+addr);
+                    Log.e(TAG, "found using arp #3 "+addr+"  "+host.hardwareAddress);
                     publish(host);
                     return;
                 }
@@ -239,7 +258,7 @@ public class DefaultDiscovery extends AbstractDiscovery {
 
             } catch (IOException e) {
                 publish(null);
-                Log.e(TAG, e.getMessage());
+                Log.e(TAG, "CheckRunnable run "+e.getMessage());
             } 
         }
     }
@@ -257,6 +276,9 @@ public class DefaultDiscovery extends AbstractDiscovery {
                 // Mac Addr not already detected
                 if(NetInfo.NOMAC.equals(host.hardwareAddress)){
                     host.hardwareAddress = HardwareAddress.getHardwareAddress(host.ipAddress);
+                    Log.d(TAG, "found publish: host.ipAddress="+host.ipAddress
+                            +"   host.hardwareAddress="+host.hardwareAddress
+                    );
                 }
 
                 // NIC vendor
@@ -271,8 +293,8 @@ public class DefaultDiscovery extends AbstractDiscovery {
                 // Static
                 if ((host.hostname = mSave.getCustomName(host)) == null) {
                     // DNS
-                    if (discover.prefs.getBoolean(Prefs.KEY_RESOLVE_NAME,
-                            Prefs.DEFAULT_RESOLVE_NAME) == true) {
+                    if (discover.prefs.getBoolean(ActivitySetting.KEY_RESOLVE_NAME,
+                            ActivitySetting.DEFAULT_RESOLVE_NAME) == true) {
                         try {
                             host.hostname = (InetAddress.getByName(host.ipAddress)).getCanonicalHostName();
                         } catch (UnknownHostException e) {
