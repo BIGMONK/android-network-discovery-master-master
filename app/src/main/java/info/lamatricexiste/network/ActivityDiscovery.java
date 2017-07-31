@@ -227,6 +227,8 @@ final public class ActivityDiscovery extends ActivityNet implements OnItemClickL
         if (mDiscoveryTask != null) {
             mDiscoveryTask.cancel(true);
             mDiscoveryTask = null;
+            stopDiscovering();
+
         }
     }
 
