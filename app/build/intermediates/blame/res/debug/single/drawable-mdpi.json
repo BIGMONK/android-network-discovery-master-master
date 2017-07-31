@@ -1,5 +1,9 @@
 [
     {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi\\icon.png",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\drawable-mdpi\\icon.png"
+    },
+    {
         "merged": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi\\icon.png",
         "source": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\src\\main\\res\\drawable-mdpi\\icon.png"
     }

@@ -44,30 +44,30 @@ public final class R {
     public static final class id {
         public static final int banner=0x7f0a000e;
         public static final int btn_back=0x7f0a0014;
-        public static final int btn_discover=0x7f0a0001;
-        public static final int btn_options=0x7f0a0002;
+        public static final int btn_discover=0x7f0a0000;
+        public static final int btn_options=0x7f0a0001;
         public static final int btn_scan=0x7f0a0013;
-        public static final int edittext=0x7f0a0000;
+        public static final int edittext=0x7f0a0008;
         public static final int host=0x7f0a0010;
-        public static final int info_container=0x7f0a0005;
-        public static final int info_in=0x7f0a0007;
-        public static final int info_ip=0x7f0a0006;
-        public static final int info_mo=0x7f0a0008;
+        public static final int info_container=0x7f0a0004;
+        public static final int info_in=0x7f0a0006;
+        public static final int info_ip=0x7f0a0005;
+        public static final int info_mo=0x7f0a0007;
         public static final int ip=0x7f0a0015;
         public static final int list=0x7f0a000a;
         public static final int list_closed=0x7f0a0012;
         public static final int list_connect=0x7f0a000f;
-        public static final int list_empty=0x7f0a0004;
+        public static final int list_empty=0x7f0a0003;
         public static final int list_open=0x7f0a0011;
         public static final int list_ports=0x7f0a000d;
         public static final int logo=0x7f0a0009;
         public static final int mac=0x7f0a000b;
-        public static final int output=0x7f0a0003;
+        public static final int output=0x7f0a0002;
         public static final int vendor=0x7f0a000c;
     }
     public static final class layout {
-        public static final int dialog_edittext=0x7f030000;
-        public static final int discovery=0x7f030001;
+        public static final int activity_discovery=0x7f030000;
+        public static final int dialog_edittext=0x7f030001;
         public static final int donate=0x7f030002;
         public static final int help=0x7f030003;
         public static final int list_host=0x7f030004;

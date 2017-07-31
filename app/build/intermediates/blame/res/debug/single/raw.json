@@ -1,7 +1,15 @@
 [
     {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\raw\\services.bin",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\raw\\services.bin"
+    },
+    {
         "merged": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\raw\\saves.bin",
         "source": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\src\\main\\res\\raw\\saves.bin"
+    },
+    {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\raw\\saves.bin",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\raw\\saves.bin"
     },
     {
         "merged": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\raw\\services.bin",

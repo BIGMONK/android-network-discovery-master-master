@@ -8,6 +8,18 @@
         "source": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\scan_single.xml"
     },
     {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\scan_single.xml",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\scan_single.xml"
+    },
+    {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\help.xml",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\help.xml"
+    },
+    {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\list_host.xml",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\list_host.xml"
+    },
+    {
         "merged": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\donate.xml",
         "source": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\donate.xml"
     },
@@ -16,8 +28,24 @@
         "source": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\portscan.xml"
     },
     {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\list_port.xml",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\list_port.xml"
+    },
+    {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\activity_discovery.xml",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\activity_discovery.xml"
+    },
+    {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\main.xml",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\main.xml"
+    },
+    {
         "merged": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\discovery.xml",
         "source": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\discovery.xml"
+    },
+    {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\dialog_edittext.xml",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\dialog_edittext.xml"
     },
     {
         "merged": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\dialog_edittext.xml",
@@ -30,6 +58,14 @@
     {
         "merged": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\help.xml",
         "source": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\help.xml"
+    },
+    {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\donate.xml",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\donate.xml"
+    },
+    {
+        "merged": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\portscan.xml",
+        "source": "C:\\Users\\DanWa\\Desktop\\demo\\android-network-discovery-master-master\\app\\src\\main\\res\\layout\\portscan.xml"
     },
     {
         "merged": "C:\\Users\\win7\\Desktop\\android-network-discovery-master-master\\app\\build\\intermediates\\res\\merged\\debug\\layout\\main.xml",
